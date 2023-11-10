@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"time"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -29,33 +30,42 @@ type Balon struct {
 
 func main() {
 
+	rand.Seed(time.Now().UnixNano())
+
 	// latexBalon := Balon{
 	//Volume: 15 ,
 	//Material: "Latex" ,
 	//}
 
-	// Parametry symulacji
-	numSteps := 100
-	inflationRate := 0.1 // Współczynnik rozciągliwości balona
-
 	// Inicjalizacja balona
-	radius := 1.0
-	balloon := make([]float64, numSteps)
-	balloon[0] = radius
+	var radius float64 = 200
+	var balloon []float64
+	balloon = append(balloon, 200)
+	var time int = 0
 
 	// Tworzenie wykresu
 	p := plot.New()
 
 	// Symulacja pompowania balona
-	for step := 1; step < numSteps; step++ {
+	for radius < 15000 {
 		// Symulacja rozciągliwości balona
-		radius = radius * (1 + inflationRate*rand.Float64())
-		balloon[step] = radius
+		time += 1
+		if time%3 == 0 {
+			radius = radius + 1000 + 3000*rand.Float64()
+			balloon = append(balloon, radius)
+			fmt.Println("if")
+		} else {
+			balloon = append(balloon, radius)
+			fmt.Println("else")
+		}
+		fmt.Println(balloon[time])
+		fmt.Println(time)
+
 	}
 
 	// Przygotowanie danych
-	pts := make(plotter.XYs, numSteps)
-	for i := 0; i < numSteps; i++ {
+	pts := make(plotter.XYs, time)
+	for i := 0; i < time; i++ {
 		pts[i].X = float64(i)
 		pts[i].Y = balloon[i]
 	}
@@ -69,8 +79,8 @@ func main() {
 
 	// Ustawienia wykresu
 	p.Title.Text = "Symulacja pompowania balona"
-	p.X.Label.Text = "Kroki"
-	p.Y.Label.Text = "Promień balona"
+	p.X.Label.Text = "Czas [s]"
+	p.Y.Label.Text = "Objętość balona [mL]"
 	p.X.Min = 0
 	p.Y.Min = 0
 
